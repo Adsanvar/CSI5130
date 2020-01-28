@@ -116,17 +116,17 @@ def sgd(X,y,w,alpha, iter):
     
     return w
 
-def linear_regression(X, y):
-    m = len(X)
-    x_bar = mean(X)
-    y_bar = mean(y)
 
-    #deviations
-    d_xy = np.sum(y*x) - (m*x_bar*y_bar)
-    d_xx = np.sum(x*x) - (m*x_bar*x_bar)
+def linear_regression(x, y, alpha, w, b, itter):
+    m = len(y)
+
+    for i in range(itter):
+        o_train = np.dot(w, x) + b
+        cost_train = (1/(2*m)) * (np.sum(np.square(o_train, y)))
+        
+
 
     
-
 
 
 if __name__ == '__main__':
@@ -136,6 +136,7 @@ if __name__ == '__main__':
     iterations = 750 # 750 iterations is good enough
     np.random.seed(123) #sets random seed
     w = np.random.rand(attributes.shape[1]+1) #random variables for the weights
+    b = w # for linear regression
     weights = []
     cost = []
 
@@ -143,8 +144,10 @@ if __name__ == '__main__':
     n_attributes = (attributes - mean(attributes)) / attributes.std()
     n_attributes = np.c_[np.ones(attributes.shape[0]), n_attributes]
     y_norm = (naoh_out - mean(naoh_out)) / naoh_out.std()
+    sgd_n_attributes = (attributes - mean(attributes)) / attributes.std()
 
-    weights, cost = gd(n_attributes, v_out['voltage_6'], w,alpha, iterations)
+    #gradient descent
+    #weights, cost = gd(n_attributes, v_out['voltage_6'], w,alpha, iterations)
 
     # plt.title("voltage_6 Cost Function")
     # plt.ylabel("Cost")
@@ -154,11 +157,18 @@ if __name__ == '__main__':
     # plt.savefig('voltage_6_Cost_Function.png')
 
 
-    w = np.delete(w, 0,0)
+    w = np.delete(w, 0,0) # removes initial weight
+    #Stochastic Gradient Descent
+    #sgd(sgd_n_attributes.to_numpy(), y_norm, w, alpha, 10000)
 
-    sgd_n_attributes = (attributes - mean(attributes)) / attributes.std()
-    sgd(sgd_n_attributes.to_numpy(), y_norm, w, alpha, 10000)
+    #Linear Regression
 
-    linear_regression(attributes, naoh_out)
+    
+    x_test = attributes.sample(n=1000) #select 1000 random samples to test
+    y_test = naoh_out.loc[x_test.index.tolist()] # selects the corresponding y_test values
+    x_train = attributes.drop(x_test.index.tolist())#drops x_test values and sets to x_train
+    y_test = naoh_out.drop(y_test.index.tolis())
+    
+    #linear_regression(attributes, naoh_out)
 
-
+    
