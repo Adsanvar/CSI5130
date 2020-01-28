@@ -1,14 +1,22 @@
 import pandas as pd
 import numpy as np
-from scipy.stats import pearsonr
+import matplotlib.pyplot as plt
+#from sklearn.preprocessing import StandardScaler
+#from sklearn.decomposition import PCA
+
+
 ###VARS###
 data = pd.read_csv('alkali_data.csv')
-data = data.drop(columns=['time'], axis=1)
-v_out = data.iloc[:,7:13]
+data = data.drop(columns=['time' , 'output_nacl_PH_1', 'output_nacl_PH_2', 'output_nacl_PH_3', 'output_nacl_PH_4', 'output_nacl_PH_5','output_nacl_PH_6'], axis=1)
+v_out = data.iloc[:,6:12]
 naoh_out = data['output_naoh_1-6']
 attributes = data.drop(columns=['output_naoh_1-6'], axis=1) #drops output_naoh_1-6 from our X
 attributes = attributes.drop(attributes.columns[7:13], axis=1) #drops Voltages 1-6 from out X
 
+#Standardized data
+# std_v_out = StandardScaler().fit_transform(v_out)
+# std_naoh_out = StandardScaler().fit_transform(naoh_out)
+# std_attr = StandardScaler().fit_transform(attributes)
 
 #mean
 def mean(data):
@@ -32,8 +40,10 @@ def variance(data):
     var = 0
     for i in data:
         var += (i - x_bar) ** 2
+
     var = var / (len(data) -1)
-    return var 
+    
+    return var
 
 def stdev(data):
     return np.sqrt(variance(data))
@@ -81,30 +91,74 @@ iter: number of itterations
 '''
 def gd(X, y, w, alpha, iter):
     m = len(y)
+    cost_history = []
     for i in range(iter):
         y_pred = np.dot(X, w)
-        summation = np.dot(X.T, y_pred - y)
-        w = w - alpha * (1/m) * summation
+        error = y_pred - y
+        cost = 1/(2*m) * np.dot(error.T, error)
+        cost_history.append(cost)
+        cost_fn = np.dot(X.T, y_pred - y)
+        w = w - (alpha * (1/m) * cost_fn)
+    return w, cost_history
+
+
+def sgd(X,y,w,alpha, iter):
+    m = len(y)
+    w = w
+    for i in range(iter):
+        r_index = np.random.choice(m, replace=True)
+        x = X[r_index]
+        y_i = y[r_index]
+        y_pred = np.dot(x, w)
+        error = y_pred - y_i
+        cost_fn = np.dot(x.T, error)
+        w = w - (alpha * (1/m) * cost_fn)
+    
     return w
 
-if __name__ == '__main__':
+def linear_regression(X, y):
+    m = len(X)
+    x_bar = mean(X)
+    y_bar = mean(y)
+
+    #deviations
+    d_xy = np.sum(y*x) - (m*x_bar*y_bar)
+    d_xx = np.sum(x*x) - (m*x_bar*x_bar)
+
     
+
+
+
+if __name__ == '__main__':
+
     #Hyperparameters:
-    alpha = 0.01
-    iterations = 1000
-    np.random.seed(123)
-    w = np.random.rand(2)
+    alpha = 0.01 #step
+    iterations = 750 # 750 iterations is good enough
+    np.random.seed(123) #sets random seed
+    w = np.random.rand(attributes.shape[1]+1) #random variables for the weights
     weights = []
     cost = []
 
-    for i in attributes:
-        X = attributes[i]
-        X = (X - mean(X)) / stdev(X)
-        X = np.c_[np.ones(X.shape[0]), X]
-        
-        
-        
-    #w = gd(attributes, naoh_out, w, alpha, iterations)
+    #Normalize Data
+    n_attributes = (attributes - mean(attributes)) / attributes.std()
+    n_attributes = np.c_[np.ones(attributes.shape[0]), n_attributes]
+    y_norm = (naoh_out - mean(naoh_out)) / naoh_out.std()
 
-    #print(w)
+    weights, cost = gd(n_attributes, v_out['voltage_6'], w,alpha, iterations)
+
+    # plt.title("voltage_6 Cost Function")
+    # plt.ylabel("Cost")
+    # plt.xlabel("iterations")
+    # plt.plot(cost)
+    # # plt.show()
+    # plt.savefig('voltage_6_Cost_Function.png')
+
+
+    w = np.delete(w, 0,0)
+
+    sgd_n_attributes = (attributes - mean(attributes)) / attributes.std()
+    sgd(sgd_n_attributes.to_numpy(), y_norm, w, alpha, 10000)
+
+    linear_regression(attributes, naoh_out)
+
 
