@@ -1,4 +1,4 @@
-# CSI5130 Homework 1 Question 3 Report - Adrian Sandoval-Vargas
+# CSI5130 HW_1 Question 3 Report - Adrian Sandoval-Vargas
 
 ### Impacts of Hyperparameters
 
@@ -31,16 +31,16 @@ Learning depends on the type of data. Whether the data is structed or unstructur
 
 Using OLS for a linear model results in a good model. Here are 7 graphs of the response variables using this technique.
 
-<img src='voltage_1.png' width='250px'>
-<img src='voltage_2.png' width='250px'>
-<img src='voltage_3.png'width='250px'>
-<img src='voltage_4.png'width='250px'>
-<img src='voltage_5.png'width='250px'>
-<img src='voltage_6.png'width='250px'>
+<img src='voltage_1.png' width='325px'>
+<img src='voltage_2.png' width='325px'>
+<img src='voltage_3.png' width='325px'>
+<img src='voltage_4.png' width='325px'>
+<img src='voltage_5.png' width='325px'>
+<img src='voltage_6.png' width='325px'>
 
 >Figure 4: Voltage Output using OLS. 20 Samples were chosen for depiction.
 
-<img src='output_naoh_1-6.png' width='250'>
+<img src='output_naoh_1-6.png' width='325px'>
 
 >Figure 5: NaOH Output using OLS. 20 Samples were chosen for depiction.
 
