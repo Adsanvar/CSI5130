@@ -64,8 +64,8 @@ def p_cov(x, y):
             x_ = (x.iloc[i] - x_bar)
             y_ = (y.iloc[i]- y_bar)
             x_y += x_ * y_
-            x_2 += x_ **2
-            y_2 += y_ **2
+            x_2 += np.square(x_)
+            y_2 += np.square(y_)
 
         return x_y/ (np.sqrt(x_2) * np.sqrt(y_2))
 
